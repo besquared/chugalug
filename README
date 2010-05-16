@@ -1,0 +1,12 @@
+
+Ccsv
+
+A pure-C CSV parser.
+
+== License
+
+Copyright 2010 Josh Ferguson, based off of libcsv with the License Below:
+
+== Attribution
+
+Copyright 2007, 2008 Cloudburst, LLC. Licensed under the AFL 3. See the included LICENSE file. 

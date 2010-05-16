@@ -1,0 +1,15 @@
+CHANGELOG
+LICENSE
+Manifest
+README
+Rakefile
+ext/chugalug.c
+ext/csv.h
+ext/extconf.rb
+ext/libcsv.c
+test/data.csv
+test/data_small.csv
+test/easy.csv
+test/messages.csv
+test/quoted_values.csv
+test/unit/test_chugalug.rb
