@@ -1,12 +1,8 @@
+Chugalug
 
-Ccsv
-
-A pure-C CSV parser.
+A wrapper around the native csv parser libcsv.
+Only supports reading using foreach right now.
 
 == License
 
 Copyright 2010 Josh Ferguson, based off of libcsv with the License Below:
-
-== Attribution
-
-Copyright 2007, 2008 Cloudburst, LLC. Licensed under the AFL 3. See the included LICENSE file. 
