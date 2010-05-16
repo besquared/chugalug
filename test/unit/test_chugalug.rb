@@ -51,13 +51,13 @@ class TestCcsv < Test::Unit::TestCase
   end
   
   def test_speed
-    # [Chugalug, FasterCSV, CSV].each do |klass| # CSVScan, LightCsv, 
-    #   Benchmark.bm do |x|
-    #     x.report(klass.name) do 
-    #       klass.foreach(@dir + "data.csv") do |values| end
-    #     end
-    #   end
-    # end
+    [Chugalug, FasterCSV, CSV].each do |klass| # CSVScan, LightCsv, 
+      Benchmark.bm do |x|
+        x.report(klass.name) do 
+          klass.foreach(@dir + "data.csv") do |values| end
+        end
+      end
+    end
   end
   
   def test_quoted_values

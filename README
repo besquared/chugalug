@@ -3,7 +3,23 @@ Chugalug
 A wrapper around the native csv parser libcsv.
 Only supports reading using foreach right now.
 
+== Benchmark
+
+This is a terrible benchmark reading over 1,000,000 rows of relatively simple data, it works for now.
+
+          user       system     total       real
+Chugalug  1.240000   0.060000   1.300000 (  1.292274)
+          user        system    total       real
+FasterCSV 14.480000   0.130000  14.610000 ( 14.616919)
+          user        system    total       real
+CSV       60.880000   0.110000  60.990000 ( 61.042582)
+
+== Usage
+
+Chugalug.foreach(file) do |row|
+  puts row.inspect
+end
+
 == License
 
 Copyright 2010 Josh Ferguson, based off of libcsv which is licensed under the lgpl.
-
