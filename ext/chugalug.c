@@ -1,3 +1,4 @@
+#include <st.h>
 #include <ruby.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,7 +31,16 @@ static int is_term(unsigned char c) {
   return 0;
 }
 
-static VALUE foreach(VALUE self, VALUE filename) {
+int do_print(VALUE key, VALUE val, VALUE in) {
+  fprintf(stderr, "Input data is %s\n", StringValueCStr(in));
+  fprintf(stderr, "Key %s=>Value %s\n", StringValueCStr(key), StringValueCStr(val));
+  return ST_CONTINUE;
+}
+
+static VALUE foreach(VALUE self, VALUE args) {
+  VALUE filename = rb_ary_shift(args);
+  VALUE options = rb_ary_shift(args);
+  
   FILE *file = fopen(StringValueCStr(filename), "r");
   
   if (file == NULL) {
@@ -40,18 +50,26 @@ static VALUE foreach(VALUE self, VALUE filename) {
   char buf[1024];
   size_t bytes_read;
   struct csv_parser p;
-  unsigned char options = 0;
+  unsigned char csv_options = 0;
   
   struct rowdata data;
   data.ary = rb_ary_new();
   
-  if(csv_init(&p, options) != 0) {
+  if(csv_init(&p, csv_options) != 0) {
     rb_raise(rb_eRuntimeError, "Failed to initialize csv parser");
     exit(EXIT_FAILURE);
   }
   
   csv_set_space_func(&p, is_space);
-  csv_set_term_func(&p, is_term);  
+  csv_set_term_func(&p, is_term);
+  
+  if(RTEST(options)) {
+    VALUE delim = rb_hash_aref(options, ID2SYM(rb_intern("col_sep")));
+    
+    if(RTEST(delim)) {
+      csv_set_delim(&p, NUM2CHR(delim));
+    }
+  }
   
   while((bytes_read = fread(buf, 1, 1024, file)) > 0) {
     if(csv_parse(&p, buf, bytes_read, fieldcb, rowcb, &data) != bytes_read) {
@@ -75,5 +93,5 @@ static VALUE foreach(VALUE self, VALUE filename) {
 static VALUE rb_cC;
 void Init_chugalug() {
   rb_cC = rb_define_class("Chugalug", rb_cObject);
-  rb_define_singleton_method(rb_cC, "foreach", foreach, 1);
+  rb_define_singleton_method(rb_cC, "foreach", foreach, -2);
 }
