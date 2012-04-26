@@ -11,6 +11,8 @@ struct rowdata {
   VALUE ary;
 };
 
+static char termchar;
+
 void fieldcb(void* str, size_t len, void* data) {
   VALUE ary = ((struct rowdata *)data)->ary;
   rb_ary_store(ary, RARRAY_LEN(ary), rb_str_new(str, len));
@@ -27,6 +29,7 @@ static int is_space(unsigned char c) {
 }
 
 static int is_term(unsigned char c) {
+  if (termchar && c == termchar) return 1;
   if (c == CSV_CR || c == CSV_LF) return 1;
   return 0;
 }
@@ -64,11 +67,11 @@ static VALUE foreach(VALUE self, VALUE args) {
   csv_set_term_func(&p, is_term);
   
   if(RTEST(options)) {
+    VALUE term = rb_hash_aref(options, ID2SYM(rb_intern("row_sep")));
     VALUE delim = rb_hash_aref(options, ID2SYM(rb_intern("col_sep")));
     
-    if(RTEST(delim)) {
-      csv_set_delim(&p, NUM2CHR(delim));
-    }
+    if(RTEST(term)) { termchar = NUM2CHR(term); }
+    if(RTEST(delim)) { csv_set_delim(&p, NUM2CHR(delim)); }
   }
   
   while((bytes_read = fread(buf, 1, 1024, file)) > 0) {

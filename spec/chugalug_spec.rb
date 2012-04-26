@@ -46,6 +46,21 @@ describe "A chugalug" do
     chugalug.length.should == File.readlines(file_path('pipe_delim')).length
   end
   
+  it "should parse files with non-standard row delimiters" do
+    chugalug = []
+    Chugalug.foreach(file_path('term_delim'), {:col_sep => '|', :row_sep => '*'}) do |values|
+      chugalug << values.dup
+    end
+    
+    puts chugalug.inspect
+    
+    chugalug.each do |row|
+      row.length.should == 12
+    end
+    chugalug.length.should == File.readlines(file_path('pipe_delim')).length
+  end
+  
+  
   it "should benchmark", :benchmark => true do
     [Chugalug, FasterCSV, CSV].each do |klass|
       Benchmark.bm do |x|
