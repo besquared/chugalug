@@ -3,6 +3,7 @@ LICENSE
 Manifest
 README
 Rakefile
+chugalug.gemspec
 ext/chugalug.c
 ext/csv.h
 ext/extconf.rb
