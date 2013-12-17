@@ -93,8 +93,10 @@ static VALUE foreach(VALUE self, VALUE args) {
   return Qnil;
 }
 
-static VALUE rb_cC;
+static VALUE mChug, mParser;
 void Init_chugalug() {
-  rb_cC = rb_define_class("Chugalug", rb_cObject);
-  rb_define_singleton_method(rb_cC, "foreach", foreach, -2);
+  mChug = rb_define_module("Chugalug");
+  mParser = rb_define_class_under(mChug, "Parser", rb_cObject);
+
+  rb_define_singleton_method(mParser, "foreach", foreach, -2);
 }

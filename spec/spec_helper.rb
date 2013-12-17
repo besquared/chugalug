@@ -5,6 +5,8 @@ require 'bundler/setup'
 #   add_filter "/spec"
 # end
 
+require 'chugalug'
+
 require 'tmpdir'
 
 require 'csv'
