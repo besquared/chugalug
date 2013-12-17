@@ -11,6 +11,8 @@ describe Chugalug do
   it "should parse the correct number of lines" do
     chugalug = []
     Chugalug::Parser.foreach(data_path('data_small.csv')) do |values|
+      puts values.inspect
+
       chugalug << values.dup
     end
   end
