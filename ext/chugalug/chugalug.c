@@ -1,5 +1,6 @@
 #include <ruby.h>
 #include <ruby/st.h>
+#include <ruby/encoding.h> // Ruby 1.9+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,36 +8,6 @@
 #include <errno.h>
 
 #include "csv.h"
-
-/* String encoding is only available in Ruby 1.9+ */
-#ifdef HAVE_RUBY_ENCODING_H
-
-#include <ruby/encoding.h>
-
-#define RB_ENC_FIND_INDEX(encoding) \
-  rb_enc_find_index(encoding)
-
-#define ENCODED_STR_NEW(str, length, enc_index)  \
-  ({ \
-  VALUE _string = rb_str_new(str, length); \
-  if (enc_index != -1) { \
-    rb_enc_associate_index(_string, enc_index); \
-  } \
-  _string; \
-  })
-
-#else
-
-#define RB_ENC_FIND_INDEX(encoding) \
-  ({ \
-  rb_raise(rb_eRuntimeError, "Character encodings are unavailable in your ruby version!"); \
-  -1; \
-  })
-
-#define ENCODED_STR_NEW(str, length, enc_index)  \
-  rb_str_new(str, length)
-
-#endif
 
 struct rowdata {
   VALUE ary;
@@ -49,12 +20,13 @@ void fieldcb(void* str, size_t len, void* data) {
   struct rowdata* rdata = (struct rowdata *)data;
 
   VALUE ary = rdata->ary;
-  int encoding = rdata->encoding;
+  VALUE strValue = rb_str_new(str, len);
 
-  printf("Encoding index is %i\n", encoding);
+  if(rdata->encoding != -1) {
+    rb_enc_associate_index(strValue, rdata->encoding);
+  }
 
-  rb_ary_store(ary, RARRAY_LEN(ary), rb_str_new(str, len));
-  //rb_ary_store(ary, RARRAY_LEN(ary), ENCODED_STR_NEW(str, len, encoding));
+  rb_ary_store(ary, RARRAY_LEN(ary), strValue);
 }
 
 void rowcb(int c, void* data) {
@@ -73,12 +45,6 @@ static int is_term(unsigned char c) {
   return 0;
 }
 
-int do_print(VALUE key, VALUE val, VALUE in) {
-  fprintf(stderr, "Input data is %s\n", StringValueCStr(in));
-  fprintf(stderr, "Key %s=>Value %s\n", StringValueCStr(key), StringValueCStr(val));
-  return ST_CONTINUE;
-}
-
 static VALUE foreach(VALUE self, VALUE args) {
   VALUE filename = rb_ary_shift(args);
   VALUE options = rb_ary_shift(args);
@@ -88,21 +54,15 @@ static VALUE foreach(VALUE self, VALUE args) {
   if (file == NULL) {
     rb_raise(rb_eRuntimeError, "File not found");
   }
-
   
   char buf[1024];
   size_t bytes_read;
   struct csv_parser p;
   unsigned char csv_options = 0;
-  
-  /* Specify the character encoding of the input data */
-
-  // if(!RTEST(encoding)) {
-  //   encoding = rb_str_new("UTF-8", 5);
-  // }
 
   struct rowdata data;
   data.ary = rb_ary_new();
+  data.encoding = -1;
   
   if(csv_init(&p, csv_options) != 0) {
     rb_raise(rb_eRuntimeError, "Failed to initialize csv parser");
@@ -119,12 +79,7 @@ static VALUE foreach(VALUE self, VALUE args) {
 
     if(RTEST(term)) { termchar = NUM2CHR(term); }
     if(RTEST(delim)) { csv_set_delim(&p, NUM2CHR(delim)); }
-
-    if(RTEST(encoding)) { 
-      data.encoding = RB_ENC_FIND_INDEX(StringValueCStr(encoding));
-    } else {
-      data.encoding = -1;
-    }
+    if(RTEST(encoding)) { data.encoding = rb_enc_find_index(StringValueCStr(encoding)); }
   }
   
   while((bytes_read = fread(buf, 1, 1024, file)) > 0) {

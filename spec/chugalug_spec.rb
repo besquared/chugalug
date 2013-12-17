@@ -7,37 +7,38 @@ describe Chugalug do
       end
     }.should raise_error(RuntimeError)
   end
-  
-  it "should parse the correct number of lines" do
-    chugalug = []
-    Chugalug::Parser.foreach(data_path('data_small.csv')) do |values|
-      puts values.inspect
 
-      chugalug << values.dup
-    end
-  end
-  
-  it "should parse files with non-standard field delimiters" do
-    chugalug = []
-    Chugalug::Parser.foreach(data_path('pipe_delim.csv'), {:col_sep => '|'}) do |values|
-      chugalug << values.dup
+  describe "Parsing" do
+    it "With default field delimiters" do
+      row_count = 0
+      Chugalug::Parser.foreach(data_path('data_small.csv')) do |row|
+        row_count += 1
+      end
+      row_count.should == 20
     end
     
-    chugalug.each do |row|
-      row.length.should == 12
+    it "With non-standard field delimiters" do
+      row_count = 0
+      Chugalug::Parser.foreach(data_path('pipe_delim.csv'), {:col_sep => '|'}) do |values|
+        row_count += 1
+      end
+      row_count.should == 10
     end
-    chugalug.length.should == File.readlines(data_path('pipe_delim.csv')).length
-  end
-  
-  it "should parse files with non-standard row delimiters" do
-    chugalug = []
-    Chugalug::Parser.foreach(data_path('term_delim.csv'), {:col_sep => '|', :row_sep => '*'}) do |values|
-      chugalug << values.dup
+    
+    it "With non-standard row delimiters" do
+      row_count = 0
+      Chugalug::Parser.foreach(data_path('term_delim.csv'), {:col_sep => '|', :row_sep => '*'}) do |values|
+        row_count += 1
+      end
+      row_count.should == 10
     end
-        
-    chugalug.each do |row|
-      row.length.should == 12
+
+    it "With a different encoding" do
+      Chugalug::Parser.foreach(data_path('data_small.csv'), :encoding => 'UTF-8') do |values|
+        values.each do |value|
+          value.encoding.name.should == 'UTF-8'
+        end
+      end
     end
-    chugalug.length.should == File.readlines(data_path('pipe_delim.csv')).length
   end
 end
