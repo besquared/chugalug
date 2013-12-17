@@ -9,22 +9,10 @@ describe Chugalug do
   end
   
   it "should parse the correct number of lines" do
-
-    Chugalug::Parser.foreach(data_path('data_small.csv')) do |values|
-      puts values.inspect
-    end
-
     chugalug = []
     Chugalug::Parser.foreach(data_path('data_small.csv')) do |values|
       chugalug << values.dup
     end
-    
-    csv = []
-    CSV.foreach(data_path('data_small.csv')) do |values|
-      csv << values
-    end
-    
-    chugalug.should == csv
   end
   
   it "should parse files with non-standard field delimiters" do
@@ -49,16 +37,5 @@ describe Chugalug do
       row.length.should == 12
     end
     chugalug.length.should == File.readlines(data_path('pipe_delim.csv')).length
-  end
-  
-  
-  it "should benchmark", :benchmark => true do
-    [Chugalug::Parser, CSV].each do |klass|
-      Benchmark.bm do |x|
-        x.report(klass.name) do 
-          klass.foreach(file_path('data')) do |values| end
-        end
-      end
-    end
   end
 end

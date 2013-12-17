@@ -1,8 +1,18 @@
-tmp
+*.gem
+*.rbc
+.bundle
+.config
+coverage
+InstalledFiles
+lib/bundler/man
 pkg
-ext/rcsv/Makefile
-ext/rcsv/libcsv.o
-ext/rcsv/rcsv.o
-lib/rcsv/rcsv.so
-lib/rcsv/rcsv.bundle
-.*swp
+rdoc
+spec/reports
+test/tmp
+test/version_tmp
+tmp
+
+# YARD artifacts
+.yardoc
+_yardoc
+doc/

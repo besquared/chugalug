@@ -1,16 +1,13 @@
 require 'rubygems'
 require 'bundler/setup'
 
-# SimpleCov.start do
-#   add_filter "/spec"
-# end
+require 'simplecov'
+
+SimpleCov.start do
+  add_filter "/spec"
+end
 
 require 'chugalug'
-
-require 'tmpdir'
-
-require 'csv'
-require 'benchmark'
 
 RSpec.configure do |config|
   config.filter_run_excluding :benchmark => true
