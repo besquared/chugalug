@@ -1,30 +1,26 @@
-# -*- encoding: utf-8 -*-
+# coding: utf-8
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'chugalug/version'
 
-Gem::Specification.new do |s|
-  s.name = "chugalug"
-  s.version = "0.0.1"
+Gem::Specification.new do |spec|
+  spec.name          = "chugalug"
+  spec.version       = Chugalug::VERSION
+  spec.authors       = ["Josh Ferguson"]
+  spec.email         = ["support@modeanalytics.com"]
+  spec.description   = %q{A wrapper around libcsv}
+  spec.summary       = %q{A wrapper around libcsv}
+  spec.homepage      = "http://www.modeanalytics.com/"
+  spec.license       = "MIT"
 
-  s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Josh Ferguson"]
-  s.date = "2012-05-02"
-  s.description = "A wrapper around libcsv."
-  s.email = "josh@besquared.net"
-  s.extensions = ["ext/extconf.rb"]
-  s.extra_rdoc_files = ["CHANGELOG", "LICENSE", "README", "ext/chugalug.c", "ext/csv.h", "ext/extconf.rb", "ext/libcsv.c"]
-  s.files = ["CHANGELOG", "LICENSE", "Manifest", "README", "Rakefile", "ext/chugalug.c", "ext/csv.h", "ext/extconf.rb", "ext/libcsv.c", "spec/chugalug_spec.rb", "spec/data/data.csv", "spec/data/data_small.csv", "spec/data/easy.csv", "spec/data/messages.csv", "spec/data/pipe_delim.csv", "spec/data/quoted_values.csv", "spec/data/term_delim.csv", "spec/spec.opts", "chugalug.gemspec"]
-  s.homepage = "http://www.github.com/besquared/chugalug/"
-  s.rdoc_options = ["--line-numbers", "--inline-source", "--title", "Chugalug", "--main", "README"]
-  s.require_paths = ["lib", "ext"]
-  s.rubyforge_project = "Besquared"
-  s.rubygems_version = "1.8.15"
-  s.summary = "A wrapper around libcsv."
+  spec.files         = `git ls-files`.split($/)
+  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
+  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
+  spec.require_paths = ["lib"]
 
-  if s.respond_to? :specification_version then
-    s.specification_version = 3
-
-    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-    else
-    end
-  else
-  end
+  # Development Dependencies
+  spec.add_development_dependency "bundler", "~> 1.3"
+  spec.add_development_dependency "rake"
+  spec.add_development_dependency "rspec"
+  spec.add_development_dependency "simplecov"
 end

@@ -1,6 +1,8 @@
-pkg/*
-ext/*.bundle
-ext/*.o
-ext/Makefile
-lib/*
-*.gem
+tmp
+pkg
+ext/rcsv/Makefile
+ext/rcsv/libcsv.o
+ext/rcsv/rcsv.o
+lib/rcsv/rcsv.so
+lib/rcsv/rcsv.bundle
+.*swp

@@ -1,18 +1,6 @@
-require 'csv'
-require 'fastercsv'
-require 'lib/chugalug'
-require 'benchmark'
+require 'spec_helper'
 
-def file_path(name)
-  File.join(File.dirname(__FILE__), 'data', "#{name}.csv")
-end
-
-RSpec.configure do |c|
-  # declare an exclusion filter
-  c.filter_run_excluding :benchmark => true
-end
-
-describe "A chugalug" do
+describe Chugalug do
   it "should raise if a file is not given" do
     lambda {
       Chugalug.foreach('fdssfd') do
@@ -22,7 +10,7 @@ describe "A chugalug" do
   
   it "should parse the correct number of lines" do
     chugalug = []
-    Chugalug.foreach(file_path('data_small')) do |values|
+    Chugalug.foreach(data_path('data_small')) do |values|
       chugalug << values.dup
     end
     
@@ -36,7 +24,7 @@ describe "A chugalug" do
   
   it "should parse files with non-standard field delimiters" do
     chugalug = []
-    Chugalug.foreach(file_path('pipe_delim'), {:col_sep => '|'}) do |values|
+    Chugalug.foreach(data_path('pipe_delim'), {:col_sep => '|'}) do |values|
       chugalug << values.dup
     end
     
@@ -48,7 +36,7 @@ describe "A chugalug" do
   
   it "should parse files with non-standard row delimiters" do
     chugalug = []
-    Chugalug.foreach(file_path('term_delim'), {:col_sep => '|', :row_sep => '*'}) do |values|
+    Chugalug.foreach(data_path('term_delim'), {:col_sep => '|', :row_sep => '*'}) do |values|
       chugalug << values.dup
     end
     
@@ -57,12 +45,12 @@ describe "A chugalug" do
     chugalug.each do |row|
       row.length.should == 12
     end
-    chugalug.length.should == File.readlines(file_path('pipe_delim')).length
+    chugalug.length.should == File.readlines(data_path('pipe_delim')).length
   end
   
   
   it "should benchmark", :benchmark => true do
-    [Chugalug, FasterCSV, CSV].each do |klass|
+    [Chugalug, CSV].each do |klass|
       Benchmark.bm do |x|
         x.report(klass.name) do 
           klass.foreach(file_path('data')) do |values| end
